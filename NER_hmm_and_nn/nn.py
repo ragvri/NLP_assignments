@@ -106,5 +106,7 @@ if __name__ == "__main__":
 
         print(
             f'X_train:{X_train.shape} X_test:{X_test.shape} y_train:{y_train.shape} y_test:{y_test.shape}')
-        model.fit(X_train, y_train, epochs=100, verbose=1,
-                  validation_data=(X_test, y_test), callbacks=[metrics])
+        # model.fit(X_train, y_train, epochs=100, verbose=1,
+        #           validation_data=(X_test, y_test), callbacks=[metrics])
+        y_pred = model.predict(X_test)
+        

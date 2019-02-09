@@ -44,6 +44,7 @@ class Metrics(Callback):
     def on_epoch_end(self, epoch, logs={}):  # epoch is auto incrementing
         val_predict = np.argmax((np.asarray(self.model.predict(
             self.validation_data[0]))), axis=1)
+
         val_targ = np.argmax(self.validation_data[1], axis=1)
 
         _val_precision, _val_recall, _val_f1, _ = precision_recall_fscore_support(
