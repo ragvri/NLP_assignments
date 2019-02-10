@@ -1,11 +1,11 @@
 from sklearn.model_selection import KFold
 import numpy
 
-# computing the intial probabilities for each state/tag
+# computing the intial probabilities for each state
 def compute_start_probability():
 
     for state in states:
-        start_p[state] = (sentence_start_with_tag.get(state, 0) + 1) / (len(X_train) + 1)
+        start_p[state] = (start_p.get(state, 0) + 1) / (len(X_train) + 1)
 
 
 #computing transition probabilites of states
@@ -13,7 +13,7 @@ def compute_transition_probability():
 
     for next_state in states:
         for prev_state in states:
-            trans_p[(next_state, prev_state)] = trans_p.get((next_state, prev_state), default_trans_prob) / tag_frequency[prev_state]
+            trans_p[(next_state, prev_state)] = trans_p.get((next_state, prev_state), default_trans_prob) / state_frequency[prev_state]
 
 
 #computing emission probabilities from each state to word
@@ -24,14 +24,14 @@ def compute_emission_probability():
             if (word, state) not in emit_p:
                 emit_p[(word, state)] = default_emit_prob
             else:
-                emit_p[(word, state)] = emit_p[(word, state)] / tag_frequency[state]
+                emit_p[(word, state)] = emit_p[(word, state)] / state_frequency[state]
 
 
 def viterbi(start_p, emit_p, trans_p, query):
 
     dp_prob = {}
     dp_state = {}
-    # calculating dp values for initial word, tag
+    # calculating dp values for initial first word of the query
     for state in states:
         emit_p[(query[0], state)] = emit_p.get((query[0], state), default_emit_prob) 
         dp_prob[state] = start_p[state] * emit_p[(query[0], state)]
@@ -99,12 +99,12 @@ if __name__ == '__main__':
         X_train, X_test = x[train_index], x[test_index]
         trans_p = {}
         emit_p = {}
+        start_p = {}
         states = set()
-        sentence_start_with_tag = {}
-        tag_frequency = {}
+        state_frequency = {}
         words = set()
 
-        # computing the required frequency of words, tags for computing required probabilities(i.e. emission, start, transition)
+        # computing the required frequency of words, tags(= hidden states) for computing required probabilities(i.e. emission, start, transition)
         for given_sentence in X_train:
             last_tag = ''
             is_start_index = 1
@@ -112,19 +112,19 @@ if __name__ == '__main__':
                 if len(pair_of_words) == 1:
                     continue
                 if is_start_index == 1:
-                    sentence_start_with_tag[pair_of_words[1]] = sentence_start_with_tag.get(pair_of_words[1], 0) + 1
+                    start_p[pair_of_words[1]] = start_p.get(pair_of_words[1], 0) + 1
                     is_start_index = 0
                 else:
                     trans_p[(pair_of_words[1], last_tag)] = trans_p.get((pair_of_words[1], last_tag), 0) + 1
 
                 last_tag = pair_of_words[1]
-                tag_frequency[pair_of_words[1]] = tag_frequency.get(pair_of_words[1], 0) + 1
+                state_frequency[pair_of_words[1]] = state_frequency.get(pair_of_words[1], 0) + 1
                 emit_p[(pair_of_words[0], pair_of_words[1])] = emit_p.get((pair_of_words[0], pair_of_words[1]), 0) + 1
                 words.add(pair_of_words[0])
                 states.add(pair_of_words[1])
 
         states = list(states)
-        start_p = {}
+        words = list(words)
         # computing the required initial probabilities
         compute_start_probability()
         compute_transition_probability()
