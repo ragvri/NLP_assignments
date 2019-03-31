@@ -5,6 +5,7 @@ from nltk.corpus import stopwords
 import fastText
 import numpy as np
 import math
+import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 
 
@@ -109,6 +110,19 @@ X.append(word_embedding)
 X_new = pca.fit_transform(X)
 print(f'{labels}: {X_new}')
 
+x_separate = []
+y_separate = []
+
+for i in X_new:
+	x_separate.append(i[0])
+
+for i in X_new:
+	y_separate.append(i[1])
+
+plt.scatter(x_separate, y_separate)
+for i, txt in enumerate(labels):
+	plt.annotate(txt, (x_separate[i], y_separate[i]))
+plt.show()
 
 '''
 X_new contains 2d values. eg [[1,2],[3,4],[5,6]]
