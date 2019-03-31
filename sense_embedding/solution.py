@@ -78,12 +78,10 @@ def get_sense_embedding(sense_dictionary, ft):
     return senses_embedding
 
 
-print("Starting...")
 ft = fastText.load_model('D:\\softwares\\fasttext\\wiki.en.bin')
 
 
-word = "dog"
-# word = input("Enter the word to do")
+word = input("Enter the word to do")
 sense_dictionary = get_sense_dictionary(word)
 senses_embedding = get_sense_embedding(sense_dictionary, ft)
 word_embedding = ft.get_word_vector(word.lower())
@@ -108,28 +106,17 @@ labels.append(word)
 X.append(word_embedding)
 
 X_new = pca.fit_transform(X)
-print(f'{labels}: {X_new}')
 
 x_separate = []
 y_separate = []
 
 for i in X_new:
-	x_separate.append(i[0])
+    x_separate.append(i[0])
 
 for i in X_new:
-	y_separate.append(i[1])
+    y_separate.append(i[1])
 
 plt.scatter(x_separate, y_separate)
 for i, txt in enumerate(labels):
-	plt.annotate(txt, (x_separate[i], y_separate[i]))
+    plt.annotate(txt, (x_separate[i], y_separate[i]))
 plt.show()
-
-'''
-X_new contains 2d values. eg [[1,2],[3,4],[5,6]]
-labels contains the corresponding word for each list in X_new. eg if labels [a,b,c,] then a is label for [1,2]
-
-TODO:
-1) Plot X_new in matplotlib with the labels
-2) When everything is done, remove hardcoded "word" variable and take user input.
-
-'''
